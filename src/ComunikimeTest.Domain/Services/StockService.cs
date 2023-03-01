@@ -28,11 +28,13 @@ namespace ComunikimeTest.Domain.Services
 
             var dbStock = await _repository.GetByProduct(stock.ProductId, cancellationToken);
 
-            if(dbStock == null)
+            if (dbStock == null)
                 await _repository.Add(stock, cancellationToken);
             else
+            {
                 dbStock.Amount = stock.Amount;
-
+                await _repository.Update(dbStock, cancellationToken);
+            }
         }
     }
 }

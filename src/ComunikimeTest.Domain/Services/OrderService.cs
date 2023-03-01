@@ -20,8 +20,13 @@ namespace ComunikimeTest.Domain.Services
 
         public async new Task Add(Order order, CancellationToken cancellationToken)
         {
-            if (order.Items.Any(i => _stockRepository.GetByProduct(i.ProductId, cancellationToken).Result.Amount >= i.Amount))
-                throw new Exception("There are not enough items to complete the order.");
+            foreach (var item in order.Items)
+            {
+                var stock = await _stockRepository.GetByProduct(item.ProductId, cancellationToken);
+
+                if (stock.Amount < item.Amount)
+                    throw new Exception("There are not enough items to complete the order.");
+            }                
 
             foreach(var item in order.Items)
             {
